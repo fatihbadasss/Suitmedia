@@ -7,9 +7,8 @@ require('dotenv').config();
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-// Konfigurasi Middleware yang Diperkuat
 app.use(cors({
-  origin: ['http://localhost:3000', 'http://localhost:3001'], // Allowed origins
+  origin: ['http://localhost:3000', 'http://localhost:3001'], 
   credentials: true,
   methods: ['GET', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
@@ -19,7 +18,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname)));
 
-// Enhanced Logging Middleware
+
 app.use((req, res, next) => {
   console.log(`[${new Date().toISOString()}] ${req.method} ${req.originalUrl}`);
   console.log('Headers:', req.headers);
@@ -28,7 +27,7 @@ app.use((req, res, next) => {
   next();
 });
 
-// API Response Standardization
+
 const standardizeResponse = (data, meta) => {
   return {
     success: true,
@@ -42,11 +41,11 @@ const standardizeResponse = (data, meta) => {
   };
 };
 
-// Enhanced Proxy Endpoint
+
 app.get('/api/ideas', async (req, res) => {
   const baseUrl = 'https://suitmedia-backend.suitdev.com/api/ideas';
   
-  // Validasi dan sanitasi parameter
+
   const pageNumber = Math.max(1, parseInt(req.query['page[number]']) || 1);
   const pageSize = Math.min(50, Math.max(1, parseInt(req.query['page[size]']) || 10));
   const sort = ['-published_at', 'published_at'].includes(req.query.sort) 
@@ -75,10 +74,8 @@ app.get('/api/ideas', async (req, res) => {
       validateStatus: (status) => status < 500
     });
 
-    // Standardisasi response
     let responseData = response.data;
-    
-    // Jika response tidak memiliki meta, buat manual
+ 
     if (!responseData.meta) {
       responseData.meta = {
         current_page: pageNumber,
@@ -116,7 +113,6 @@ app.get('/api/ideas', async (req, res) => {
   }
 });
 
-// Health Check Endpoint
 app.get('/health', (req, res) => {
   res.status(200).json({
     status: 'OK',
@@ -125,7 +121,6 @@ app.get('/health', (req, res) => {
   });
 });
 
-// 404 Handler
 app.use((req, res, next) => {
   res.status(404).json({
     success: false,
@@ -140,7 +135,7 @@ app.use((req, res, next) => {
   });
 });
 
-// Global Error Handler
+
 app.use((err, req, res, next) => {
   console.error('Global Error:', err);
   
@@ -154,7 +149,7 @@ app.use((err, req, res, next) => {
   });
 });
 
-// Server Startup
+
 app.listen(PORT, () => {
   console.log(`🚀 Server berjalan di http://localhost:${PORT}`);
   console.log(`🔌 API Endpoint: http://localhost:${PORT}/api/ideas`);
