@@ -1,4 +1,3 @@
-// HEADER SCROLL EFFECT
 let lastScroll = 0;
 const header = document.getElementById('header');
 
@@ -25,7 +24,6 @@ window.addEventListener('scroll', () => {
   lastScroll = currentScroll;
 });
 
-// BANNER CAROUSEL DAN PARALLAX EFFECT
 const navLinks = document.querySelectorAll('.menu a');
 const bannerImage = document.querySelector('.banner-image');
 const bannerTitle = document.querySelector('.banner-title');
@@ -69,7 +67,6 @@ function updateBannerContent(index) {
   bannerTitle.textContent = content.title;
   bannerText.textContent = content.text;
 
-  // Update kelas 'active' pada navigasi
   navLinks.forEach(link => link.classList.remove('active'));
   const activeLink = document.querySelector(`.menu a[href="#${sectionId}"]`);
   if (activeLink) {
@@ -87,16 +84,14 @@ bannerNextBtn.addEventListener('click', () => {
   updateBannerContent(currentBannerIndex);
 });
 
-// Inisialisasi konten banner
 updateBannerContent(currentBannerIndex);
 
-// Efek Parallax Banner
 window.addEventListener('scroll', () => {
   const scrollPosition = window.pageYOffset;
-  bannerImage.style.transform = `translateY(${scrollPosition * 0.5}px)`; // Sesuaikan multiplier untuk efek parallax
+  bannerImage.style.transform = `translateY(${scrollPosition * 0.5}px)`; 
 });
 
-// Perbarui event listener navLinks untuk juga memperbarui konten banner
+  
 navLinks.forEach(link => {
   link.addEventListener('click', (e) => {
     e.preventDefault();
@@ -106,10 +101,9 @@ navLinks.forEach(link => {
       currentBannerIndex = newIndex;
       updateBannerContent(currentBannerIndex);
     }
-    // Logika scrollIntoView dan active class tetap sama
     navLinks.forEach(l => l.classList.remove('active'));
     link.classList.add('active');
-    // Jika sectionId adalah 'ideas', tidak perlu scroll, karena konten 'ideas' ada di bawah
+    
     if (sectionId !== 'ideas') {
       const targetSection = document.getElementById(sectionId);
       if (targetSection) {
@@ -119,11 +113,11 @@ navLinks.forEach(link => {
   });
 });
 
-// POSTS FETCHING & PAGINATION
+
 let currentState = {
   page: 1,
-  perPage: 10, // Default per page
-  sort: '-published_at' // Default sort order
+  perPage: 10, 
+  sort: '-published_at'
 };
 
 const sortSelect = document.getElementById('sort');
@@ -140,10 +134,9 @@ async function fetchPosts() {
     
     const result = await response.json();
     
-    // Debugging: Lihat struktur response sebenarnya
+    
     console.log('API Response:', result);
     
-    // Pastikan struktur response sesuai
     if (!result.meta) {
       console.warn('API tidak mengembalikan meta data, menggunakan default');
       result.meta = {
@@ -166,9 +159,9 @@ async function fetchPosts() {
   }
 }
 
-// Di dalam fungsi renderPagination
+
 function renderPagination(meta = {}) {
-  // Berikan nilai default
+  
   const current_page = meta.current_page || 1;
   const total_pages = meta.total_pages || 1;
   
@@ -188,7 +181,7 @@ function renderPosts(posts) {
   posts.forEach(post => {
     const card = document.createElement('div');
     card.className = 'post-card';
-    // Gunakan pilihan URL gambar yang lebih kuat atau placeholder
+    
     const imageUrl = post.medium_image?.url || post.small_image?.url || 'https://via.placeholder.com/400x300';
     card.innerHTML = `
       <img class="post-image lazyload"
@@ -201,7 +194,6 @@ function renderPosts(posts) {
     `;
     grid.appendChild(card);
   });
-  // Inisialisasi lazyload setelah gambar baru ditambahkan
   lazyload.init();
 }
 
@@ -209,7 +201,7 @@ function renderPagination(paginationMeta) {
   paginationContainer.innerHTML = '';
   const { current_page, total_pages } = paginationMeta;
 
-  // Tombol Previous
+  
   const prevButton = document.createElement('button');
   prevButton.textContent = 'Sebelumnya';
   prevButton.disabled = current_page === 1;
@@ -221,7 +213,7 @@ function renderPagination(paginationMeta) {
   });
   paginationContainer.appendChild(prevButton);
 
-  // Nomor halaman
+  
   const maxPagesToShow = 5;
   let startPage = Math.max(1, current_page - Math.floor(maxPagesToShow / 2));
   let endPage = Math.min(total_pages, startPage + maxPagesToShow - 1);
@@ -243,7 +235,7 @@ function renderPagination(paginationMeta) {
     paginationContainer.appendChild(pageButton);
   }
 
-  // Tombol Next
+
   const nextButton = document.createElement('button');
   nextButton.textContent = 'Berikutnya';
   nextButton.disabled = current_page === total_pages;
@@ -256,7 +248,7 @@ function renderPagination(paginationMeta) {
   paginationContainer.appendChild(nextButton);
 }
 
-// Event listener untuk kontrol sort dan per-page
+
 sortSelect.addEventListener('change', async () => {
   currentState.sort = sortSelect.value;
   currentState.page = 1;
@@ -273,8 +265,8 @@ perPageSelect.addEventListener('change', async () => {
   renderPagination(result.meta);
 });
 
-// Lazy Loading (script lazy load sederhana)
-// Ini adalah contoh minimal, untuk produksi, pertimbangkan library seperti `IntersectionObserver`
+
+
 const lazyload = {
   init: function() {
     const lazyImages = document.querySelectorAll('.lazyload');
@@ -294,7 +286,7 @@ const lazyload = {
         lazyImageObserver.observe(lazyImage);
       });
     } else {
-      // Fallback untuk browser yang tidak mendukung Intersection Observer
+
       lazyImages.forEach(function(lazyImage) {
         lazyImage.src = lazyImage.dataset.src;
         lazyImage.classList.remove('lazyload');
@@ -304,7 +296,7 @@ const lazyload = {
 };
 
 
-// Muat postingan saat halaman dimuat
+
 document.addEventListener('DOMContentLoaded', async () => {
   const result = await fetchPosts();
   renderPosts(result.data);
